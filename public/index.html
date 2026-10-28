@@ -204,7 +204,7 @@ function lobbyHTML(){let nm='';try{nm=localStorage.getItem('gcName')||''}catch(e
  '<p><input id="nm" maxlength="20" placeholder="Your name" value="'+esc(nm)+'"></p>'+
  '<p><select id="np"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select> <button class="pri" onclick="createGame()">Create a game</button></p>'+
  '<p><input id="rc" maxlength="4" placeholder="Room code" value="'+esc(urlRoom)+'" style="text-transform:uppercase;width:110px"> <button onclick="joinGame()">Join a game</button></p>'+
- '<p class="mut" id="err"></p><p class="mut">Create a game, then send the invite link or the 4-letter code to your friends.</p></div>'}
+ '<p class="mut" id="err"></p><p class="mut">Create a game, then send the invite link or the 4-letter code to your friends.</p><p><a href="/solo.html">Play single-player instead (against the computer, or friends on one device)</a></p></div>'}
 function waitingHTML(){const link=location.origin+'/?room='+st.code,full=st.seats.length>=2;
  return '<div class="hd"><h1>Gem Court</h1><button onclick="leave()">Leave</button></div><div class="pan"><div class="ph"><b>Room '+st.code+'</b><span class="mut">'+st.seats.length+' of '+st.max+' joined</span></div>'+
  '<p>Send this link to your friends:<br><b>'+esc(link)+'</b></p><p><button onclick="copyLink()">Copy invite link</button></p>'+

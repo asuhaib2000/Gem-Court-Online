@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gem Court</title>
+<style>
+:root{--bg:#e8edf2;--fg:#17202b;--panel:#fff;--line:#c4cdd8;--mut:#5d6a79;--acc:#5b3fa8;--ok:#1f8a4c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1823;--fg:#e6ebf2;--panel:#192534;--line:#2f4156;--mut:#93a3b6;--acc:#a99af0;--ok:#4fd187;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1823;--fg:#e6ebf2;--panel:#192534;--line:#2f4156;--mut:#93a3b6;--acc:#a99af0;--ok:#4fd187;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:600px;margin:0 auto;padding:10px}
+h1{font:700 26px Georgia,"Times New Roman",serif;margin:0;letter-spacing:.3px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+button{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 9px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+:root[data-theme="dark"] button.pri{color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.pri{color:#111}}
+.msg{padding:8px 10px;border-left:4px solid var(--acc);background:var(--panel);margin-bottom:8px;font-weight:600}
+.pan{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+.ph{display:flex;justify-content:space-between;margin-bottom:4px}
+.pts{font:700 18px Georgia,serif;color:var(--acc)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+.mut{color:var(--mut);font-size:12px;margin-top:4px}
+.gem{display:inline-flex;width:24px;height:24px;border-radius:50%;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:1.5px solid rgba(128,128,128,.7);box-sizing:border-box;margin:1px}
+.gem.sm{width:19px;height:19px;font-size:11px}
+.gem.click{cursor:pointer;outline:2px dashed var(--acc)}
+.nobles{display:flex;gap:6px;margin-bottom:8px}
+.noble{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px;text-align:center}
+.noble b{font:700 16px Georgia,serif;display:block}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;min-height:104px;display:flex;flex-direction:column;justify-content:space-between}
+.card.aff{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}
+.card.empty{opacity:.3}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top b{font:700 18px Georgia,serif}
+.costs{display:flex;flex-wrap:wrap}
+.acts{display:flex;flex-direction:column;gap:2px}
+.acts button{padding:2px;font-size:11px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--mut);background:transparent;border-style:dashed}
+.bank{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.gb{display:flex;flex-direction:column;align-items:center;padding:4px 6px;font-size:11px}
+.gb.on{outline:3px solid var(--acc)}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.log{font-size:12px;color:var(--mut)}
+details{margin-top:10px;font-size:13px;color:var(--mut)}
+.gem{position:relative;display:inline-block;width:26px;height:26px;border:0;border-radius:0;margin:1px;vertical-align:middle}
+.gem svg{display:block;width:100%;height:100%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.gem i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 12px/1 system-ui,sans-serif;font-style:normal}
+.gem.sm{width:21px;height:21px}.gem.sm i{font-size:11px}
+.gem.big{width:30px;height:30px}
+.gem.chip{width:36px;height:36px;margin:2px 5px 2px 2px}
+.gem.chip i{inset:auto;right:-5px;bottom:-4px;width:17px;height:17px;border-radius:50%;background:var(--panel);color:var(--fg);border:1px solid var(--line);font-size:10px}
+.gem.wm{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:0;transform:translate(-50%,-50%);opacity:.3}
+.gem.wm svg{filter:none}
+.t0{--c1:#d9c89d;--c2:#8c7347}.t1{--c1:#e6cf80;--c2:#a47b2b}.t2{--c1:#bcade0;--c2:#4d3e8e}
+.card{padding:0;overflow:hidden;min-height:118px;justify-content:flex-start;border:1px solid rgba(0,0,0,.4)}
+.card.t0,.card.t1,.card.t2,.deck.back{background:linear-gradient(165deg,var(--c1),var(--c2))}
+.band{display:flex;justify-content:space-between;align-items:center;padding:2px 4px}
+.band b{font:700 20px Georgia,serif;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7);min-width:12px}
+.art{position:relative;flex:1;min-height:34px}
+.costs{padding:2px;background:rgba(20,14,4,.5)}
+.acts{padding:3px;background:rgba(20,14,4,.5)}
+.deck.back{color:#fff;border:2px solid #f0dca0;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.noble{position:relative;display:flex;align-items:center;justify-content:space-between;text-align:left;background:linear-gradient(160deg,#f6ebc9,#cfb27a);border:2px solid #8a6a2a;color:#3a2a08;padding:4px}
+.noble b{position:absolute;top:2px;right:6px;display:block;font:700 16px Georgia,serif;color:#6b4a08}
+.req{display:flex;flex-direction:column}
+.crest{width:36px;height:40px;margin:12px 2px 0 auto}
+.gb{padding:6px 8px}
+.pan .board .card{min-height:112px}.pan .card .costs .gem{width:19px;height:19px}.pan .card .gem.wm{width:34px;height:34px}.pan .card .band b{font-size:15px}.pan .card .band .gem.big{width:22px;height:22px}
+.table{display:grid;gap:8px;grid-template-columns:1fr 1fr;grid-template-areas:"top top" "left right" "board board" "bottom bottom";align-items:start}
+.a-top{grid-area:top}.a-left{grid-area:left}.a-right{grid-area:right}.a-board{grid-area:board;min-width:0}.a-bottom{grid-area:bottom}
+.table .pan{margin-bottom:0}
+.pan.act{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.pan.sd .gem.chip{width:26px;height:26px;margin:1px 4px 1px 1px}.pan.sd .gem.chip i{width:14px;height:14px;font-size:9px;right:-4px;bottom:-3px}
+#np{font:inherit;padding:4px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg)}
+@media (min-width:860px){#app{max-width:1120px}.table{grid-template-columns:200px minmax(0,1fr) 200px;grid-template-areas:"top top top" "left board right" "bottom bottom bottom"}.table.n2{grid-template-columns:minmax(0,640px);justify-content:center;grid-template-areas:"top" "board" "bottom"}}
+.t0{--c1:#f1e9d4;--c2:#d6c59b}.t1{--c1:#f6e9b8;--c2:#dcc067}.t2{--c1:#e8e2f7;--c2:#b8abdd}
+.deck.t0{background:linear-gradient(165deg,#a58a58,#6e5a35)}.deck.t1{background:linear-gradient(165deg,#c89a36,#85621a)}.deck.t2{background:linear-gradient(165deg,#7a68b8,#40326f)}
+.card{min-height:156px}
+.body{display:flex;flex:1}
+.costs{flex-direction:column;flex-wrap:nowrap;align-items:center;gap:2px;padding:3px 2px;background:rgba(40,30,10,.12);border-right:1px solid rgba(0,0,0,.15)}
+.costs .gem{width:25px;height:25px;margin:0}
+.costs .gem svg{filter:drop-shadow(0 0 1.5px rgba(0,0,0,.85))}
+.art{flex:1;position:relative;min-height:0}
+.gem.wm{opacity:.35}
+.body{flex-direction:row-reverse}
+.costs{border-right:0;border-left:1px solid rgba(0,0,0,.15)}
+.noble{background:radial-gradient(ellipse at 60% 35%,var(--v1),var(--v2) 80%);border:2px solid #d8b24a;box-shadow:inset 0 0 0 2px rgba(122,90,20,.8),0 1px 3px rgba(0,0,0,.4);color:#f6ebc9;padding:4px;min-height:96px;overflow:hidden;align-items:stretch}
+.noble::after{content:'';position:absolute;inset:3px;border:1px solid rgba(232,200,96,.45);border-radius:5px;pointer-events:none}
+.noble b{top:3px;right:3px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#fff3b0,#d9a21b);border:1.5px solid #6b4a08;color:#3a2a08;font:700 14px Georgia,serif;z-index:2;box-shadow:0 1px 2px rgba(0,0,0,.5)}
+.req{justify-content:center;align-items:center;background:linear-gradient(#f6ebc9,#cfb27a);border:1px solid #8a6a2a;border-radius:6px;padding:3px 2px;z-index:1}
+.portrait{height:88px;width:auto;margin:auto 0 0 auto;align-self:flex-end}
+.noble{flex-direction:column;align-items:center;justify-content:flex-start;min-height:134px}
+.noble .portrait{order:1;height:94px;margin:0 auto;align-self:center}
+.noble .req{order:2;flex-direction:row;flex-wrap:wrap;width:100%;gap:2px;margin-top:3px;padding:2px}
+.gem.wm{opacity:1;width:52px;height:52px}
+.gem.wm svg{filter:brightness(.72) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.deck.back b{background:rgba(0,0,0,.38);padding:1px 8px;border-radius:10px}
+.deck .ttl,.deck .dots{display:none}
+.card.sc{position:relative;padding:0;background:#222;min-height:156px;border:2px solid #f2eee4;border-radius:9px}
+.card.sc.aff{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok)}
+.sc .scene{position:absolute;inset:0}.sc .scene svg{width:100%;height:100%;display:block}
+.sc .scp{position:absolute;top:0;right:0;min-width:46%;padding:0 6px;text-align:right;font:700 28px/1.1 Georgia,serif;color:#555;background:linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.55));border-bottom-left-radius:10px;z-index:1}
+.sc .scp:empty{display:none}
+.sc .scc{position:absolute;top:3px;left:3px;display:flex;flex-direction:column;gap:2px;z-index:1}
+.sc .scc .gem{width:25px;height:25px;margin:0}
+.sc .scg{position:absolute;right:5px;bottom:46px;z-index:1}
+.sc .scg .gem{width:34px;height:34px}
+.sc .acts{position:absolute;left:0;right:0;bottom:0;z-index:2;background:rgba(0,0,0,.5);padding:3px}
+body.scenic .deck.back{position:relative;justify-content:flex-end;font-size:11px;padding-bottom:4px;border:2px solid #f2eee4;border-radius:9px;color:#f0d060;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+body.scenic .deck.back b{display:none}
+body.scenic .deck.back.t0{background:radial-gradient(ellipse at 30% 22%,#a9c24f,#5f7f2c 48%,#1c2a1c)}
+body.scenic .deck.back.t1{background:radial-gradient(ellipse at 30% 22%,#e8ad52,#a8651f 50%,#3a2210)}
+body.scenic .deck.back.t2{background:radial-gradient(ellipse at 30% 22%,#4f96e0,#26469a 50%,#0f1a4a)}
+body.scenic .deck .ttl{display:block;position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) rotate(-90deg);font:italic 700 17px Georgia,serif;white-space:nowrap;color:#f0d060}
+body.scenic .deck .dots{display:flex;flex-direction:column;gap:3px;position:absolute;left:7px;top:46%;transform:translateY(-50%)}
+body.scenic .deck .dots s{width:7px;height:7px;border-radius:50%;background:#fff;display:block}
+body.scenic .noble{background:linear-gradient(#aebfd3,#e9dfc6);color:#333}
+body.scenic .noble .req{order:0;background:none;border:0;justify-content:flex-start;padding:0;width:auto;align-self:flex-start}
+body.scenic .noble b{background:none;border:0;box-shadow:none;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);font-size:26px;width:auto;height:auto;top:0;right:6px}
+body.scenic .noble .portrait{height:104px}
+.deck.back.t0{background:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 5px,transparent 5px 10px),repeating-linear-gradient(-45deg,rgba(0,0,0,.16) 0 5px,transparent 5px 10px),linear-gradient(165deg,#a58a58,#6e5a35)}
+.deck.back.t1{background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.2) 0 3px,transparent 3px 8px),linear-gradient(165deg,#c89a36,#85621a)}
+.deck.back.t2{background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.18) 0 9deg,transparent 9deg 18deg),linear-gradient(165deg,#7a68b8,#40326f)}
+.acts{background:rgba(40,30,10,.12)}
+</style></head><body>
+<div id="app"></div>
+<script>
+const C=['w','u','g','r','k'],ALL=[...C,'y'];
+const COL={w:'#e9eef2',u:'#3b82f6',g:'#22a05a',r:'#dc3c3c',k:'#3a3a44',y:'#e6b422'};
+const NAME={w:'Pearl',u:'Sapphire',g:'Emerald',r:'Ruby',k:'Onyx',y:'Gold'};
+const TIER=['I','II','III'];
+const HEAD='<div class="hd" style="flex-wrap:wrap;gap:6px"><h1>Gem Court</h1><span><select id="np" onchange="NP=+this.value" title="Number of players"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select> <button onclick="newGame(\'ai\')">New: vs computer</button> <button onclick="newGame(\'friend\')">New: friends on one device</button> <button onclick="toggleStyle()">Card style</button> <a href="/" style="margin-left:6px">Online play</a></span></div>';
+let S,sel=[],swapOn=false,give=[],scenic=false,NP=2;try{if(localStorage.getItem('gcStyle2')==='s')scenic=true}catch(e){}
+document.body.classList.toggle('scenic',scenic);
+const rnd=n=>Math.floor(Math.random()*n);
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+const TPL=[
+ [[0,[1,1,1,1]],[0,[1,1,1,2]],[0,[1,2,2]],[0,[2,2]],[0,[3]],[0,[1,1,3]],[0,[1,2]],[1,[4]]],
+ [[1,[2,2,3]],[1,[1,3,2]],[2,[5]],[2,[2,4,1]],[2,[5,3]],[3,[6]]],
+ [[3,[3,3,5,3]],[4,[7]],[4,[6,3,3]],[5,[7,3]]]];
+function mkDeck(t,n){n=n||4;const tot=Math.round([40,30,20][t]*n/4),base=Math.floor(tot/5),extra=shuf([...C]).slice(0,tot-5*base),d=[];
+ C.forEach(c=>{const k=base+(extra.includes(c)?1:0);shuf(TPL[t].slice()).slice(0,k).forEach(([p,v])=>{const o=shuf(C.filter(x=>x!==c)),cost={};v.forEach((q,i)=>cost[o[i]]=q);d.push({t,c,p,cost})})});return shuf(d)}
+function mkNobles(m){return Array.from({length:m||3},()=>{const k=Math.random()<.5?2:3,cs=shuf([...C]).slice(0,k),req={};cs.forEach(c=>req[c]=k===2?4:3);return{p:3,req}})}
+function newGame(mode){swapOn=false;give=[];mode=mode||(S&&S.mode)||'ai';const n=NP,e=Math.round(7*n/4),decks=[0,1,2].map(t=>mkDeck(t,n));
+ S={n,bank:{w:e,u:e,g:e,r:e,k:e,y:Math.round(5*n/4)},decks,board:decks.map(d=>d.splice(0,4)),nobles:mkNobles(n+1),
+ P:Array.from({length:n},()=>({tok:{w:0,u:0,g:0,r:0,k:0,y:0},cards:[],res:[],nob:[]})),turn:0,over:false,last:false,phase:'act',log:[],mode,cover:false,msg:mode==='friend'?'Player 1, your turn.':'Your turn. Take gems, hold a card, or buy one.'};
+ sel=[];draw()}
+const dsc=p=>{const d={w:0,u:0,g:0,r:0,k:0};p.cards.forEach(c=>d[c.c]++);return d};
+const pts=p=>p.cards.reduce((a,c)=>a+c.p,0)+p.nob.reduce((a,n)=>a+n.p,0);
+const total=p=>ALL.reduce((a,c)=>a+p.tok[c],0);
+function price(p,cd){const d=dsc(p),pay={w:0,u:0,g:0,r:0,k:0,y:0};let g=0;
+ for(const c of C){const need=Math.max(0,(cd.cost[c]||0)-d[c]),use=Math.min(need,p.tok[c]);pay[c]=use;g+=need-use}
+ if(g>p.tok.y)return null;pay.y=g;return pay}
+const friend=()=>S.mode==='friend',cur=()=>friend()?S.turn:0,pname=i=>friend()?'Player '+(i+1):i?(S.n>2?'Computer '+i:'Computer'):'You';
+function log(i,t){S.log.unshift(pname(i)+' '+t);S.log.length=Math.min(S.log.length,6)}
+function refill(t,i){S.board[t][i]=S.decks[t].shift()||null}
+function doBuy(i,cd,src){const p=S.P[i],pay=price(p,cd);ALL.forEach(c=>{p.tok[c]-=pay[c];S.bank[c]+=pay[c]});
+ if(src.r!==undefined)p.res.splice(src.r,1);else refill(src.t,src.i);
+ p.cards.push(cd);log(i,'bought a '+NAME[cd.c]+' card'+(cd.p?' ('+cd.p+' pts)':''))}
+function doRes(i,src){const p=S.P[i];let cd;
+ if(src.deck)cd=S.decks[src.t].shift();else{cd=S.board[src.t][src.i];refill(src.t,src.i)}
+ if(!cd)return;p.res.push(cd);if(S.bank.y>0){S.bank.y--;p.tok.y++}
+ log(i,'held a tier '+TIER[src.t]+(src.deck?' card from the deck':' card'))}
+function doTake(i,cols){cols.forEach(c=>{S.bank[c]--;S.P[i].tok[c]++});log(i,'took '+cols.map(c=>NAME[c]).join(', '))}
+function takeOk(cols){const av=C.filter(c=>S.bank[c]>0).length;
+ if(cols.length===1)return C.includes(cols[0])&&S.bank[cols[0]]>0;
+ if(cols.length===2&&cols[0]===cols[1])return C.includes(cols[0])&&S.bank[cols[0]]>=4;
+ if(new Set(cols).size!==cols.length)return false;
+ return cols.length<=3&&cols.every(c=>C.includes(c)&&S.bank[c]>0)}
+function afterAct(i){S.passes=0;if(total(S.P[i])>10){if(i===0||friend()){S.phase='disc';S.msg='You have more than 10 tokens. Click your gems to return them (gold cannot be returned).';draw();return}aiDiscard(i)}endTurn(i)}
+function endTurn(i){const p=S.P[i],d=dsc(p);
+ const k=S.nobles.findIndex(n=>Object.entries(n.req).every(([c,v])=>d[c]>=v));
+ if(k>=0){p.nob.push(S.nobles.splice(k,1)[0]);log(i,'received a noble (+3)')}
+ if(pts(p)>=15)S.last=true;
+ if((S.passes||0)>=S.n)return finish();
+ if(i===S.n-1&&S.last)return finish();
+ S.turn=(i+1)%S.n;S.phase='act';sel=[];swapOn=false;give=[];
+ if(S.turn!==0&&!friend()){S.msg=pname(S.turn)+' is thinking…';draw();setTimeout(aiTurn,900)}
+ else{S.msg=(friend()?pname(S.turn)+', your turn.':'Your turn.')+(S.last?' Final round: the game ends after this round.':'');S.cover=false;draw()}}
+function finish(){S.over=true;const sc=S.P.map(pts),best=Math.max(...sc);let w=S.P.map((_,i)=>i).filter(i=>sc[i]===best);
+ const f=Math.min(...w.map(i=>S.P[i].cards.length));w=w.filter(i=>S.P[i].cards.length===f);
+ S.msg=((S.passes||0)>=S.n?'Nobody can move, so the game ends. ':'')+(w.length>1?'A draw between '+w.map(pname).join(' and ')+'! ':(w[0]===0&&!friend()?'You win! ':pname(w[0])+' wins! '))+'('+S.P.map((_,i)=>pname(i)+' '+sc[i]).join(', ')+')';S.cover=false;draw()}
+/* human actions */
+const mine=()=>(S.turn===0||friend())&&!S.over&&S.phase==='act';
+function pick(c){if(!mine()||c==='y'||S.bank[c]<1)return;
+ if(sel.length===2&&sel[0]===sel[1])sel=[c];
+ else if(sel.includes(c)){if(sel.length===1&&S.bank[c]>=4)sel.push(c);else sel=sel.filter(x=>x!==c)}
+ else if(swapOn)sel=[c];else if(sel.length<3)sel.push(c);
+ if(swapOn)give=give.filter(x=>x!==sel[0]).slice(0,sel.length);
+ draw()}
+function hTake(){if(!mine())return;if(!takeOk(sel)){S.msg='Take 1, 2 or 3 different gems, or 2 of the same colour (needs 4 or more in the bank).';draw();return}
+ doTake(cur(),sel);sel=[];afterAct(cur())}
+function hBuy(t,i,r){if(!mine())return;const cd=r!==undefined?S.P[cur()].res[r]:S.board[t][i];if(!cd||!price(S.P[cur()],cd))return;
+ doBuy(cur(),cd,r!==undefined?{r}:{t,i});afterAct(cur())}
+function hRes(t,i,deck){if(!mine())return;
+ if(S.P[cur()].res.length>=3){S.msg='You can hold at most 3 cards.';draw();return}
+ if(deck?!S.decks[t].length:!S.board[t][i])return;
+ doRes(cur(),deck?{t,deck:1}:{t,i});afterAct(cur())}
+function toggleSwap(){if(!mine())return;swapOn=!swapOn;sel=[];give=[];S.msg=swapOn?'Swap: pick 1 gem (or 2 of one colour, if the pile has 4 or more) from the bank, then click your own gems to give back.':(friend()?pname(S.turn)+', your turn.':'Your turn.');draw()}
+function giveTok(c){if(!mine()||!swapOn||c==='y'||!sel.length||c===sel[0]||give.length>=sel.length)return;
+ if(give.filter(x=>x===c).length>=S.P[cur()].tok[c])return;give.push(c);draw()}
+function hSwap(){if(!mine()||!swapOn)return;const k=cur(),c=sel[0];
+ const okSel=sel.length&&(sel.length===1?S.bank[c]>=1:sel[0]===sel[1]&&S.bank[c]>=4)&&!give.includes(c);
+ if(!okSel||give.length!==sel.length){S.msg='Pick 1 gem (or 2 of one colour if the pile has 4 or more), then give back the same number of your own gems.';draw();return}
+ sel.forEach(x=>{S.bank[x]--;S.P[k].tok[x]++});give.forEach(x=>{S.P[k].tok[x]--;S.bank[x]++});
+ log(k,'swapped '+give.map(x=>NAME[x]).join(', ')+' for '+sel.map(x=>NAME[x]).join(', '));swapOn=false;give=[];sel=[];afterAct(k)}
+function hPass(){if(!mine())return;S.passes=(S.passes||0)+1;log(cur(),'passed');endTurn(cur())}
+function giveBack(c){if(swapOn&&S.phase==='act')return giveTok(c);const k=cur();if(S.phase!=='disc'||c==='y'||S.P[k].tok[c]<1)return;S.P[k].tok[c]--;S.bank[c]++;if(total(S.P[k])<=10)endTurn(k);else draw()}
+/* computer */
+function targetNeed(p){const d=dsc(p);let best=null,bs=-1;
+ [...S.board.flat().filter(Boolean),...p.res].forEach(cd=>{let def=0;const need={};
+  need.q={};C.forEach(c=>{const n=Math.max(0,(cd.cost[c]||0)-d[c]-p.tok[c]);need[c]=n;need.q[c]=Math.max(0,(cd.cost[c]||0)-d[c]);def+=n});
+  def=Math.max(0,def-p.tok.y);const s=(cd.p*2+1.5)/(def+1);if(s>bs){bs=s;best=need}});
+ return best||{w:0,u:0,g:0,r:0,k:0}}
+function combos(a,k){if(!k)return[[]];if(a.length<k)return[];const[h,...t]=a;return[...combos(t,k-1).map(x=>[h,...x]),...combos(t,k)]}
+function aiDiscard(i){const p=S.P[i],need=targetNeed(p);
+ while(total(p)>10){let bc=null,bv=-99;ALL.forEach(c=>{if(p.tok[c]<1||c==='y')return;const v=p.tok[c]-(need[c]||0)*2;if(v>bv){bv=v;bc=c}});p.tok[bc]--;S.bank[bc]++}}
+function aiTurn(){if(S.over||friend()||S.turn===0)return;const i=S.turn,p=S.P[i],d=dsc(p),need=targetNeed(p),acts=[];
+ const nb=c=>S.nobles.some(n=>n.req[c]&&n.req[c]>d[c])?3:0;
+ S.board.forEach((row,t)=>row.forEach((cd,i)=>{if(!cd)return;
+  if(price(p,cd))acts.push({a:'buy',t,i,cd,s:60+cd.p*12+nb(cd.c)});
+  if(p.res.length<3)acts.push({a:'res',t,i,s:2+(cd.p>=3?2:0)+(S.bank.y?1.5:0)})}));
+ p.res.forEach((cd,r)=>{if(price(p,cd))acts.push({a:'buy',r,cd,s:62+cd.p*12+nb(cd.c)})});
+ const av=C.filter(c=>S.bank[c]>0),over=n=>Math.max(0,total(p)+n-10)*2.5;
+ [3,2].forEach(k=>combos(av,k).forEach(cols=>acts.push({a:'take',cols,s:cols.reduce((x,c)=>x+(need[c]>0?5:1),0)-over(cols.length)})));
+ av.forEach(c=>acts.push({a:'take',cols:[c],s:(need[c]>0?4:1)-over(1)}));
+ C.forEach(c=>{if(S.bank[c]<1||!(need[c]>0))return;const q=need.q||{};
+  [1,2].forEach(n=>{if(n===2&&S.bank[c]<4)return;
+   const sp=[];C.forEach(g=>{if(g===c)return;const s=Math.max(0,p.tok[g]-(q[g]||0));for(let j=0;j<s;j++)sp.push(g)});
+   if(sp.length<n)return;
+   acts.push({a:'swap',cols:Array(n).fill(c),give:sp.slice(0,n),s:(n===2?(need[c]>=2?9:5):4)-0.5})})});
+ C.forEach(c=>{if(S.bank[c]>=4)acts.push({a:'take',cols:[c,c],s:(need[c]>=2?9:need[c]>0?5:1)-over(2)})});
+ if(!acts.length){S.passes=(S.passes||0)+1;log(i,'passed');return endTurn(i)}
+ acts.forEach(a=>a.s+=Math.random());
+ const b=acts.sort((x,y)=>y.s-x.s)[0];
+ if(b.a==='buy')doBuy(i,b.cd,b.r!==undefined?{r:b.r}:{t:b.t,i:b.i});
+ else if(b.a==='res')doRes(i,{t:b.t,i:b.i});else if(b.a==='swap'){b.cols.forEach(x=>{S.bank[x]--;p.tok[x]++});b.give.forEach(x=>{p.tok[x]--;S.bank[x]++});log(i,'swapped '+b.give.map(x=>NAME[x]).join(', ')+' for '+b.cols.map(x=>NAME[x]).join(', '))}else doTake(i,b.cols);
+ afterAct(i)}
+/* drawing */
+const B={w:['#ffffff','#e8ecf0','#9aa6b4'],u:['#8cc4ff','#2f6fe0','#153e8f'],g:['#7be3a6','#1f9d5a','#0c5a31'],r:['#ff9a9a','#d32f3f','#7e1220'],k:['#6b6b78','#2d2d36','#0e0e12'],y:['#ffe98a','#e0b020','#94650a']};
+const SH={w:'<circle cx="12" cy="12" r="10"/>',u:'<polygon points="12,1.5 22.5,12 12,22.5 1.5,12"/>',g:'<polygon points="7,2 17,2 22,7 22,17 17,22 7,22 2,17 2,7"/>',r:'<polygon points="12,1.5 21,6.75 21,17.25 12,22.5 3,17.25 3,6.75"/>',k:'<rect x="2" y="2" width="20" height="20" rx="7"/>',y:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#94650a"/>'};
+const NB=['--v1:#8a2f4a;--v2:#3a1222','--v1:#2f4f8a;--v2:#111f3a','--v1:#2f7a55;--v2:#10301f','--v1:#6a3f8a;--v2:#24123a'];
+function nhash(req){let h=7;for(const ch of JSON.stringify(req))h=(h*31+ch.charCodeAt(0))>>>0;return h}
+function portrait(req){const e=Object.keys(req),h=nhash(req);
+ const v=h%4,sk=['#f1c9a0','#d9a06f','#b97a4e','#8a5a3a'][(h>>>2)%4],hair=['#2b1b12','#6b4426','#c9b27a','#9a9aa4'][(h>>>4)%4],gold='#e8c860',robe=B[e[0]][1],trim=B[e[1]||e[0]][1],jew=B[e[2]||e[0]][1];
+ const hat=[
+ '<polygon points="20,21 21,10 26,16 30,7 34,16 39,10 40,21" fill="url(#gy)" stroke="#6b4a08"/><circle cx="30" cy="15" r="1.6" fill="'+jew+'"/>',
+ '<path d="M18 22C18 10 42 10 42 22Z" fill="'+trim+'" stroke="#222" stroke-width=".6"/><ellipse cx="30" cy="22" rx="14" ry="2.6" fill="'+robe+'" stroke="#222" stroke-width=".6"/><path d="M38 14C50 3 54 14 44 22C47 14 42 12 38 14Z" fill="#f4ead0" stroke="#999" stroke-width=".5"/>',
+ '<path d="M20 22Q30 12 40 22" fill="none" stroke="'+gold+'" stroke-width="2"/><circle cx="30" cy="16.5" r="2.4" fill="'+jew+'" stroke="#6b4a08"/>',
+ '<path d="M21 21L23 3H37L39 21Z" fill="'+trim+'" stroke="#222" stroke-width=".6"/><rect x="21.6" y="14" width="16.8" height="3" fill="'+gold+'"/><ellipse cx="30" cy="21" rx="12" ry="2.4" fill="'+robe+'" stroke="#222" stroke-width=".6"/>'][v];
+ const face=v===1?'<path d="M21 34C22 46 38 46 39 34C36 39 24 39 21 34Z" fill="'+hair+'"/>':v===2?'<path d="M27 36Q30 38 33 36" stroke="#8a3a3a" fill="none" stroke-width="1"/>':'<path d="M25 36Q30 33 35 36Q30 38 25 36Z" fill="'+hair+'"/>';
+ return '<svg class="portrait" viewBox="0 0 60 70">'+(v===2?'<path d="M18 24C13 40 15 52 21 54L25 30ZM42 24C47 40 45 52 39 54L35 30Z" fill="'+hair+'"/>':'')+
+ '<path d="M5 70C5 53 16 46 30 46C44 46 55 53 55 70Z" fill="'+robe+'" stroke="'+gold+'" stroke-width="1.2"/><path d="M22 47L30 64L38 47" fill="none" stroke="'+gold+'" stroke-width="2"/><rect x="26" y="40" width="8" height="8" fill="'+sk+'"/><ellipse cx="30" cy="47.5" rx="9" ry="3" fill="#f4ead0" stroke="#bfa66a" stroke-width=".6"/><ellipse cx="30" cy="30" rx="10" ry="12" fill="'+sk+'" stroke="rgba(0,0,0,.35)" stroke-width=".6"/>'+
+ (v===2?'':'<path d="M19.5 28C19 17 41 17 40.5 28C38 23 22 23 19.5 28Z" fill="'+hair+'"/>')+
+ '<circle cx="26" cy="30" r="1.2" fill="#222"/><circle cx="34" cy="30" r="1.2" fill="#222"/>'+face+
+ '<circle cx="30" cy="61" r="3.6" fill="url(#gy)" stroke="#6b4a08"/><circle cx="30" cy="61" r="1.6" fill="'+jew+'"/>'+hat+'</svg>'}
+function toggleStyle(){scenic=!scenic;document.body.classList.toggle('scenic',scenic);try{localStorage.setItem('gcStyle2',scenic?'s':'c')}catch(e){}draw()}
+document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute"><defs>'+ALL.map(c=>'<linearGradient id="v'+c+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+B[c][0]+'"/><stop offset="1" stop-color="'+B[c][1]+'"/></linearGradient>').join('')+'</defs></svg>');
+function scene(cd){const t=B[cd.c],h=nhash(cd.cost)+cd.p,f=cd.t;
+ const sky='<rect width="64" height="100" fill="url(#v'+cd.c+')"/><circle cx="'+(10+h%44)+'" cy="'+(14+h%12)+'" r="6" fill="#fff6c8" opacity=".75"/>';let a;
+ if(f===0)a='<path d="M0 66Q16 48 32 62T64 56V100H0Z" fill="'+t[2]+'" opacity=".55"/><path d="M0 80Q32 66 64 82V100H0Z" fill="'+t[2]+'"/><rect x="18" y="66" width="24" height="16" fill="#6b4a2a"/><path d="M15 67L30 54L45 67Z" fill="#3b2a18"/><rect x="26" y="72" width="8" height="10" fill="#1d130a"/><rect x="36" y="70" width="4" height="4" fill="#ffe9a0"/>';
+ else if(f===1)a='<path d="M0 74Q8 70 16 74T32 74T48 74T64 74V100H0Z" fill="'+t[2]+'"/><path d="M0 84Q8 80 16 84T32 84T48 84T64 84V100H0Z" fill="#000" opacity=".25"/><path d="M12 72L18 86H46L52 72Z" fill="#4a2f18" stroke="#2a1a0c" stroke-width=".6"/><path d="M32 72V28" stroke="#2a1a0c" stroke-width="1.2"/><path d="M33 30L52 68H33Z" fill="#fff5dc"/><path d="M31 38L16 68H31Z" fill="#f2e4c0"/><path d="M32 28L40 31L32 34Z" fill="#c0392b"/>';
+ else a='<rect x="6" y="46" width="52" height="46" fill="#e9e1cf" stroke="'+t[2]+'" stroke-width=".8"/><path d="M4 46L32 26L60 46Z" fill="'+t[1]+'" stroke="'+t[2]+'" stroke-width=".8"/><circle cx="32" cy="22" r="6" fill="'+t[0]+'" stroke="'+t[2]+'" stroke-width=".8"/><path d="M12 92V60Q16 54 20 60V92ZM26 92V60Q30 54 34 60V92ZM40 92V60Q44 54 48 60V92Z" fill="'+t[2]+'" opacity=".8"/><rect x="2" y="90" width="60" height="10" fill="#bfb49a"/>';
+ return '<svg viewBox="0 0 64 100" preserveAspectRatio="xMidYMid slice">'+sky+a+'</svg>'}
+function portraitArt(req){const bg='<path d="M4 70V30C4 10 18 2 30 2C42 2 56 10 56 30V70Z" fill="rgba(255,255,255,.1)" stroke="#e8c860" stroke-width="1.3"/><circle cx="30" cy="30" r="22" fill="rgba(255,236,170,.2)"/><circle cx="30" cy="2.5" r="2.2" fill="url(#gy)" stroke="#6b4a08"/>',
+ fx='<path d="M23 27.5Q26 26 28.5 27.5M31.5 27.5Q34 26 37 27.5" stroke="rgba(0,0,0,.55)" fill="none" stroke-width=".9"/><path d="M30 31V34.5Q29 35 28 34.8" stroke="rgba(0,0,0,.3)" fill="none" stroke-width=".8"/><circle cx="23.5" cy="33.5" r="2" fill="rgba(220,90,90,.25)"/><circle cx="36.5" cy="33.5" r="2" fill="rgba(220,90,90,.25)"/><circle cx="26.4" cy="29.6" r=".45" fill="#fff"/><circle cx="34.4" cy="29.6" r=".45" fill="#fff"/><path d="M17 49Q30 57 43 49" stroke="#f4ead0" stroke-width="2.6" fill="none" opacity=".9"/>';
+ return portrait(req).replace('viewBox="0 0 60 70">','viewBox="0 0 60 70">'+bg).replace('</svg>',fx+'</svg>')}
+function gem(c,n,cls,x){cls=cls||'';const chip=cls.indexOf('chip')>=0,d=B[c][2];
+ const art=chip?'<circle cx="12" cy="12" r="11" fill="url(#g'+c+')" stroke="'+d+'"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#fff" stroke-opacity=".55" stroke-dasharray="2.2 1.6"/><g transform="translate(12 12) scale(.5) translate(-12 -12)" fill="#fff" fill-opacity=".85" stroke="'+d+'" stroke-width="1.5">'+SH[c]+'</g>':'<g fill="url(#g'+c+')" stroke="'+d+'">'+SH[c]+'</g>'+(c==='w'||c==='y'?'':'<path d="M12 2.5v19M2.5 12h19" stroke="#fff" stroke-opacity=".2"/>')+'<ellipse cx="8.5" cy="8" rx="3.4" ry="1.8" fill="#fff" fill-opacity=".5" transform="rotate(-35 8.5 8)"/>';
+ const num=(n===undefined||n==='')?'':'<i'+(chip?'':' style="color:'+(c==='w'||c==='y'?'#222':'#fff')+'"')+'>'+n+'</i>';
+ return '<span class="gem '+cls+'" '+(x||'')+'><svg viewBox="0 0 24 24">'+art+'</svg>'+num+'</span>'}
+const crest=c=>'<svg class="crest" viewBox="0 0 40 44"><path d="M7 16l6 6 7-11 7 11 6-6-3 14H10z" fill="url(#gy)" stroke="#6b4a08"/><circle cx="7" cy="15" r="2" fill="url(#gy)" stroke="#6b4a08"/><circle cx="20" cy="9" r="2" fill="url(#gy)" stroke="#6b4a08"/><circle cx="33" cy="15" r="2" fill="url(#gy)" stroke="#6b4a08"/><path d="M11 32h18v6c0 4-5 5-9 6-4-1-9-2-9-6z" fill="url(#g'+c+')" stroke="#3a2a08" stroke-width="1.5"/><path d="M20 34v9M14 38h12" stroke="#fff" stroke-opacity=".4"/></svg>';
+document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute"><defs>'+ALL.map(c=>'<linearGradient id="g'+c+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+B[c][0]+'"/><stop offset=".5" stop-color="'+B[c][1]+'"/><stop offset="1" stop-color="'+B[c][2]+'"/></linearGradient>').join('')+'</defs></svg>');
+function cardHTML(cd,ctx){if(!cd)return '<div class="card empty"></div>';
+ const aff=ctx.opp?null:price(S.P[cur()],cd),m=mine()&&!ctx.opp;
+ const costs=C.filter(c=>cd.cost[c]).map(c=>gem(c,cd.cost[c],'sm')).join('');
+ let act='';
+ if(m){act='<div class="acts"><button '+(aff?'':'disabled')+' onclick="'+(ctx.r!==undefined?'hBuy(0,0,'+ctx.r+')':'hBuy('+ctx.t+','+ctx.i+')')+'">Buy</button>'+
+  (ctx.r===undefined?'<button onclick="hRes('+ctx.t+','+ctx.i+')">Hold</button>':'')+'</div>'}
+ if(scenic)return '<div class="card sc t'+cd.t+(aff?' aff':'')+'"><div class="scene">'+scene(cd)+'</div><div class="scp">'+(cd.p||'')+'</div><div class="scc">'+costs+'</div><div class="scg">'+gem(cd.c,'','big')+'</div>'+act+'</div>';
+ return '<div class="card t'+cd.t+(aff?' aff':'')+'"><div class="band" style="background:linear-gradient(90deg,'+B[cd.c][1]+','+B[cd.c][2]+')"><b>'+(cd.p||'')+'</b>'+gem(cd.c,'','big')+'</div><div class="body"><div class="costs">'+costs+'</div><div class="art">'+gem(cd.c,'','wm')+'</div></div>'+act+'</div>'}
+const hdr=()=>HEAD.replace('<option value="'+NP+'">','<option selected value="'+NP+'">');
+function panel(i,side){const p=S.P[i],d=dsc(p),disc=i===cur()&&S.phase==='disc',sw=i===cur()&&swapOn&&S.phase==='act';
+ const toks=ALL.filter(c=>p.tok[c]).map(c=>gem(c,p.tok[c],'chip'+((disc||sw)&&c!=='y'?' click':''),(disc||sw)&&c!=='y'?'onclick="giveBack(\''+c+'\')"':'')).join('')||'<i class="mut">no tokens</i>';
+ const cards=C.filter(c=>d[c]).map(c=>gem(c,d[c],'sm')).join('')||'none';
+ return '<div class="pan'+(side?' sd':'')+(i===S.turn&&!S.over?' act':'')+'"><div class="ph"><b>'+pname(i)+'</b><span class="pts">'+pts(p)+' pts</span></div><div class="row">'+toks+
+  '</div><div class="row mut">Discounts: '+cards+' &nbsp;Nobles: '+p.nob.length+' &nbsp;Held: '+p.res.length+'</div>'+(i!==cur()&&p.res.length?'<div class="board" style="grid-template-columns:repeat(3,1fr);margin-top:6px">'+p.res.map(cd=>cardHTML(cd,{opp:1})).join('')+'</div>':'')+'</div>'}
+function draw(){const m=mine();
+ if(S.cover&&!S.over){document.getElementById('app').innerHTML=hdr()+'<div class="msg">'+S.msg+'</div><p>Pass the device to '+pname(S.turn)+', then tap Ready. Held cards stay hidden until then.</p><div class="log">'+S.log.join('<br>')+'</div><p><button class="pri" onclick="S.cover=false;draw()">Ready</button></p>';return}
+ const rows=[2,1,0].map(t=>'<div class="board"><button class="deck back t'+t+'" '+(m&&S.decks[t].length?'':'disabled')+' title="Hold the top card blind" onclick="hRes('+t+',0,1)"><b>Tier '+TIER[t]+'</b>'+S.decks[t].length+' left<em class="ttl">Gem Court</em><u class="dots">'+'<s></s>'.repeat(t+1)+'</u></button>'+
+  S.board[t].map((cd,i)=>cardHTML(cd,{t,i})).join('')+'</div>').join('');
+ const nob=S.nobles.map(n=>{const e=Object.entries(n.req);return '<div class="noble" style="'+NB[(nhash(n.req)>>>6)%4]+'"><b>3</b><div class="req">'+e.map(([c,v])=>gem(c,v,'sm')).join('')+'</div>'+portraitArt(n.req)+'</div>'}).join('');
+ const bank=ALL.map(c=>'<button class="gb'+(sel.includes(c)?' on':'')+'" '+(c==='y'||!m?'disabled':'')+' onclick="pick(\''+c+'\')">'+gem(c,S.bank[c],'chip')+'<span>'+NAME[c]+'</span></button>').join('');
+ const held=S.P[cur()].res.length?'<div class="board" style="grid-template-columns:repeat(3,1fr)">'+S.P[cur()].res.map((cd,r)=>cardHTML(cd,{r})).join('')+'</div>':'';
+ const bar='<div class="bar">'+(swapOn?'<button class="pri" '+(m&&sel.length&&give.length===sel.length?'':'disabled')+' onclick="hSwap()">Confirm swap</button><button onclick="toggleSwap()">Cancel swap</button><span class="mut">Giving: '+(give.map(x=>NAME[x]).join(', ')||'nothing yet')+'</span>':'<button class="pri" '+(m&&sel.length?'':'disabled')+' onclick="hTake()">Take selected gems</button><button '+(m?'':'disabled')+' onclick="toggleSwap()">Swap with bank</button>')+'<button '+(m?'':'disabled')+' onclick="sel=[];give=[];draw()">Clear</button><button '+(m?'':'disabled')+' onclick="hPass()">Pass</button></div>';
+ const o=Array.from({length:S.n-1},(_,k)=>(cur()+k+1)%S.n);
+ const top=S.n===2?o[0]:S.n===4?o[1]:null,left=S.n>2?o[0]:null,right=S.n===3?o[1]:S.n===4?o[2]:null;
+ document.getElementById('app').innerHTML=hdr()+'<div class="msg">'+S.msg+'</div><div class="table n'+S.n+'">'+
+  (top!=null?'<div class="a-top">'+panel(top)+'</div>':'')+(left!=null?'<div class="a-left">'+panel(left,1)+'</div>':'')+(right!=null?'<div class="a-right">'+panel(right,1)+'</div>':'')+
+  '<div class="a-board"><div class="nobles">'+nob+'</div>'+rows+'<div class="bank">'+bank+'</div>'+bar+'</div>'+
+  '<div class="a-bottom">'+panel(cur())+(held?'<div class="mut">'+(friend()?pname(cur())+' held cards':'Your held cards')+'</div>'+held:'')+'</div></div>'+
+  '<div class="log">'+S.log.join('<br>')+'</div>'+
+  '<details><summary>How to play</summary><p>2 to 4 players. First to 15 points wins; the round finishes so turns are equal. On your turn do one thing: take 1, 2 or 3 different gems, take 2 of the same colour (if 4 or more are in the bank), hold a card (you get a gold wildcard that cannot be returned; max 3 held), swap gems with the bank (take 1, or 2 of one colour if the pile has 4 or more, and give back the same number of your own gems; not gold, and not the colour you take), or buy a card. Cards you own give permanent discounts. Own enough cards for a noble and it visits you for 3 points. Keep 10 tokens at most. Cards with a green outline are ones you can afford now.</p></details>'}
+newGame();
+</script></body></html>
