@@ -1,0 +1,13 @@
+{
+  "name": "gem-court-online",
+  "version": "1.0.0",
+  "description": "Gem Court: real-time online board game for 2 to 4 players",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "express": "^4.19.2", "socket.io": "^4.7.5" },
+  "devDependencies": { "socket.io-client": "^4.7.5" }
+}
